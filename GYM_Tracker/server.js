@@ -9,7 +9,7 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Connessione al database SQLite
-const db = new sqlite3.Database('database.db', (err) => {
+const db = new sqlite3.Database('Database.db', (err) => {
     if (err) {
         console.error('Errore durante l\'apertura del database:', err.message);
     } else {
