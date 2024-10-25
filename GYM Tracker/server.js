@@ -34,7 +34,7 @@ const db = new sqlite3.Database('database.db', (err) => {
 });
 
 // Route per il login
-app.post('/login', (req, res) => {
+app.post('http://37.27.1.207:3000/login', (req, res) => {
     const { email, password } = req.body;
     console.log(`Richiesta di login per l'email ${email}`);
 
@@ -55,7 +55,7 @@ app.post('/login', (req, res) => {
 });
 
 // Route per creare un nuovo utente
-app.post('/utenti', (req, res) => {
+app.post('http://37.27.1.207:3000/utenti', (req, res) => {
     const { username, email, password, tipo } = req.body;
 
     if (!username || !email || !password || !tipo) {
@@ -84,7 +84,7 @@ app.post('/utenti', (req, res) => {
 });
 
 // Route per ottenere tutti gli utenti (opzionale)
-app.get('/utenti', (req, res) => {
+app.get('http://37.27.1.207:3000/utenti', (req, res) => {
     const query = `SELECT * FROM utenti`;
 
     db.all(query, [], (err, rows) => {
@@ -97,7 +97,7 @@ app.get('/utenti', (req, res) => {
 });
 
 // Route per eliminare un utente (opzionale)
-app.delete('/utenti', (req, res) => {
+app.delete('http://37.27.1.207:3000/utenti', (req, res) => {
     const { username } = req.body;
 
     if (!username) {
@@ -122,7 +122,8 @@ app.delete('/utenti', (req, res) => {
 });
 
 // Avvio del server
-app.listen(PORT, () => {
-    console.log(`Server in esecuzione sulla porta ${PORT}`);
-});
+// Avvio del server
+app.listen(port, '37.27.1.207', () => {
+    console.log(`Server in esecuzione su http://37.27.1.207:${port}`);
+});;
 
