@@ -1,19 +1,6 @@
 {
-  "name": "gym-tracker",
-  "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
-  },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "3": "^2.1.0",
-    "body-parser": "^1.20.3",
     "express": "^4.21.1",
-    "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7"
   }
 }
