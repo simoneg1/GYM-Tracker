@@ -53,8 +53,8 @@ Requisiti di dominio:
 - Il sistema deve consentire la registrazione e la gestione di allenamenti e esercizi, evidenziando l'importanza del monitoraggio delle prestazioni fisiche.
 
 Diagramma dei casi d'uso:
-![image](https://github.com/user-attachments/assets/2d638fb7-0935-4854-a3ff-89294740baf1)
-https://github-production-user-asset-6210df.s3.amazonaws.com/133099217/380043365-71159991-f26e-4240-82af-b4a4bd80db8a.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20241030%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20241030T225719Z&X-Amz-Expires=300&X-Amz-Signature=7559d5195b37928dfe4e16778363d1da4caa2d187ca662ed660cbbda0241e881&X-Amz-SignedHeaders=host
+![380043365-71159991-f26e-4240-82af-b4a4bd80db8a](https://github.com/user-attachments/assets/1a635ef7-c6df-44bb-8ec7-66e093477209)
+
 
 
 
