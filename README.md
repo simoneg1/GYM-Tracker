@@ -11,7 +11,7 @@ Traget:
 - Personal Trainer
 
 Problema: 
-GYM Tracker risolve il problema di avere il pieno controllo dei tuoi allenamenti in palestra, consentendoti di confrontare facilmente i tuoi progressi nel tempo.
+GYM Tracker risolve il problema in quanto atleta, di avere il pieno controllo dei tuoi allenamenti in palestra, consentendoti di confrontare facilmente i tuoi progressi nel tempo, in quanto personal trainer invece, di poter seguire tutti i tuoi atleti in modo semplice e veloce.
 
 Competitor:
 - RepCount
@@ -35,7 +35,8 @@ Requisiti Funzionali:
 - Registrazione di un utente (nome, cognome, altezza, peso, età, email, password).
 - Registrazione di un personal trainer (nome, cognome, email, password).
 - Accesso sia per l'utente che per il personal trainer tramite email e password.
-- Possibilità di registrare un allenamento.
+- Possibilità di registrare un allenamento inserendo titolo e data allenamento.
+- Possibilità di eliminare un allenamento.
 - Possibilità di inserire esercizi con relative serie, ripetizioni e pesi all'interno di un allenamento.
 - Mantenere un archivio di tutti gli allenamenti fatti.
 - Possibilità di visualizzare un calendario con tutti gli allenamenti svolti.
@@ -48,9 +49,6 @@ Requisiti non funzionali:
 - L'app deve caricarsi in meno di 3 secondi e rispondere rapidamente alle interazioni degli utenti, anche con una grande quantità di dati.
 - L'app deve funzionare su diversi dispositivi (smartphone, tablet) e sistemi operativi (iOS, Android), garantendo un'esperienza utente consistente.
   
-Requisiti di dominio:
-- Il sistema deve gestire utenti (atleti) e personal trainer con diverse funzionalità di accesso e interazione.
-- Il sistema deve consentire la registrazione e la gestione di allenamenti e esercizi, evidenziando l'importanza del monitoraggio delle prestazioni fisiche.
 
 Diagramma dei casi d'uso:
 ![380043365-71159991-f26e-4240-82af-b4a4bd80db8a](https://github.com/user-attachments/assets/1a635ef7-c6df-44bb-8ec7-66e093477209)
