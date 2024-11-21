@@ -55,7 +55,7 @@ Requisiti non funzionali:
   
 
 Diagramma dei casi d'uso:
-https://yuml.me/simo12345/GYM_Tracker.svg
+
 
 
 
