@@ -36,13 +36,17 @@ Requisiti Funzionali:
 - Registrazione di un personal trainer (nome, cognome, email, password).
 - Accesso sia per l'utente che per il personal trainer tramite email e password.
 - Possibilità di registrare un allenamento inserendo titolo e data allenamento.
-- Possibilità di eliminare un allenamento.
 - Possibilità di inserire esercizi con relative serie, ripetizioni e pesi all'interno di un allenamento.
-- Mantenere un archivio di tutti gli allenamenti fatti.
-- Possibilità di visualizzare un calendario con tutti gli allenamenti svolti.
-- Possibilità per il personal trainer di visualizzare gli allenamenti di un atleta.
-- Possibilità per il personal trainer di inserire esercizi da svolgere per un atleta.
 - Avere un timer modificabile per il recupero tra le serie.
+- Possibilità di eliminare un allenamento.
+- Possibilità dell'altleta di visualizzare un calendario con tutti gli allenamenti svolti.
+- Possibilità dell'altleta di visualizzare gli allenamenti presenti dentro il calendario.
+- Possibilita del personal trainer di visualizzare il calendario con tutti gli allenamenti dell'atleta.
+- Possibilità del personal trainer di visualizzare gli allenamenti presenti dentro il calendario.
+- Possibilità di un personal trainer di creare una scheda per l'atleta divisa per allenamenti.
+- Possibilità dell'atleta di visualizzare la propria scheda.
+
+
 
 Requisiti non funzionali:
 - L'app deve avere un'interfaccia intuitiva e facile da navigare, in modo che utenti di diverse età e livelli di esperienza possano utilizzarla senza difficoltà.
@@ -51,7 +55,7 @@ Requisiti non funzionali:
   
 
 Diagramma dei casi d'uso:
-![380043365-71159991-f26e-4240-82af-b4a4bd80db8a](https://github.com/user-attachments/assets/1a635ef7-c6df-44bb-8ec7-66e093477209)
+https://yuml.me/simo12345/GYM_Tracker.svg
 
 
 
