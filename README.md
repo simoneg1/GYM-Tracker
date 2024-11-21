@@ -55,6 +55,8 @@ Requisiti non funzionali:
   
 
 Diagramma dei casi d'uso:
+![image](https://github.com/user-attachments/assets/4d4d46fb-32e8-4d88-a5fc-15ac17d6c8a4)
+
 
 
 
