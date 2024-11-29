@@ -2,9 +2,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
-const port = 3000;
 
 const app = express();
+const port = 3000;
+
+// Configurazione middleware
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -15,14 +17,21 @@ const db = new sqlite3.Database('Database.db', (err) => {
     } else {
         console.log('Connesso al database SQLite.');
 
+        // Creazione tabella utenti
         db.serialize(() => {
-            db.run(`CREATE TABLE IF NOT EXISTS utenti (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT NOT NULL UNIQUE,
-                email TEXT NOT NULL UNIQUE,
-                password TEXT NOT NULL,
-                tipo TEXT NOT NULL
-            )`, (err) => {
+            db.run(`
+                CREATE TABLE IF NOT EXISTS utenti (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    tipo TEXT NOT NULL,
+                    nome TEXT NOT NULL,
+                    cognome TEXT NOT NULL,
+                    eta INTEGER NOT NULL,
+                    peso REAL NOT NULL,
+                    altezza REAL NOT NULL,
+                    email TEXT NOT NULL UNIQUE,
+                    password TEXT NOT NULL
+                )
+            `, (err) => {
                 if (err) {
                     console.error('Errore durante la creazione della tabella utenti:', err.message);
                 } else {
@@ -36,85 +45,81 @@ const db = new sqlite3.Database('Database.db', (err) => {
 // Route per il login
 app.post('/login', (req, res) => {
     const { email, password } = req.body;
-    console.log(`Richiesta di login per l'email ${email}`);
+
+    if (!email || !password) {
+        return res.status(400).json({ message: 'Email e password sono obbligatorie.' });
+    }
 
     const query = `SELECT * FROM utenti WHERE email = ? AND password = ?`;
-
     db.get(query, [email, password], (err, row) => {
         if (err) {
-            res.status(500).json({ message: 'Errore durante la lettura del database' });
-        } else if (row) {
-            res.status(200).json({
-                "username": row.username,
-                "status": "Logged In"
-            });
+            return res.status(500).json({ message: 'Errore durante il login.' });
+        }
+        if (row) {
+            return res.status(200).json({ email: row.email, message: 'Login riuscito!' });
         } else {
-            res.status(401).json({ message: 'Credenziali non valide.' });
+            return res.status(401).json({ message: 'Credenziali non valide.' });
         }
     });
 });
 
-// Route per creare un nuovo utente
+// Route per la registrazione
 app.post('/utenti', (req, res) => {
-    const { username, email, password, tipo } = req.body;
+    const { tipo, nome, cognome, eta, peso, altezza, email, password } = req.body;
 
-    if (!username || !email || !password || !tipo) {
-        return res.status(400).json({ message: 'Dati mancanti: username, email, password o tipo di account' });
+    if (!tipo || !nome || !cognome || !eta || !peso || !altezza || !email || !password) {
+        return res.status(400).json({ message: 'Tutti i campi sono obbligatori.' });
     }
 
     const queryCheck = `SELECT * FROM utenti WHERE email = ?`;
-
     db.get(queryCheck, [email], (err, row) => {
         if (err) {
-            return res.status(500).json({ message: 'Errore durante la verifica dell\'email nel database' });
+            return res.status(500).json({ message: 'Errore durante la verifica dell\'email nel database.' });
         }
         if (row) {
-            return res.status(400).json({ message: 'Email già esistente. Scegli un\'altra email.' });
+            return res.status(400).json({ message: 'Email già registrata. Scegli un\'altra email.' });
         }
 
-        const queryInsert = `INSERT INTO utenti (username, email, password, tipo) VALUES (?, ?, ?, ?)`;
-
-        db.run(queryInsert, [username, email, password, tipo], function (err) {
+        const queryInsert = `
+            INSERT INTO utenti (tipo, nome, cognome, eta, peso, altezza, email, password)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+        db.run(queryInsert, [tipo, nome, cognome, eta, peso, altezza, email, password], function (err) {
             if (err) {
-                return res.status(500).json({ message: 'Errore durante l\'inserimento del nuovo utente nel database' });
+                return res.status(500).json({ message: 'Errore durante l\'inserimento nel database.' });
             }
-            res.status(201).json({ username: username, status: "Registered In" });
+            res.status(201).json({ message: 'Registrazione completata con successo!' });
         });
     });
 });
 
-// Route per ottenere tutti gli utenti (opzionale)
+// Route opzionale per ottenere tutti gli utenti
 app.get('/utenti', (req, res) => {
     const query = `SELECT * FROM utenti`;
 
     db.all(query, [], (err, rows) => {
         if (err) {
-            res.status(500).json({ message: 'Errore durante la lettura del database' });
-        } else {
-            res.status(200).json(rows);
+            return res.status(500).json({ message: 'Errore durante la lettura del database.' });
         }
+        res.status(200).json(rows);
     });
 });
 
-// Route per eliminare un utente (opzionale)
+// Route opzionale per eliminare un utente
 app.delete('/utenti', (req, res) => {
-    const { username } = req.body;
+    const { email } = req.body;
 
-    if (!username) {
-        return res.status(400).json({ message: 'Dati mancanti: username' });
+    if (!email) {
+        return res.status(400).json({ message: 'Email è obbligatoria per eliminare un utente.' });
     }
 
-    const query = `DELETE FROM utenti WHERE username = ?`;
-
-    db.run(query, [username], function (err) {
+    const query = `DELETE FROM utenti WHERE email = ?`;
+    db.run(query, [email], function (err) {
         if (err) {
-            return res.status(500).json({ message: 'Errore durante l\'eliminazione dell\'utente dal database' });
+            return res.status(500).json({ message: 'Errore durante l\'eliminazione dell\'utente.' });
         }
         if (this.changes > 0) {
-            res.status(200).json({
-                "username": username,
-                "status": "Utente cancellato"
-            });
+            res.status(200).json({ message: 'Utente eliminato con successo.' });
         } else {
             res.status(404).json({ message: 'Utente non trovato.' });
         }
@@ -122,8 +127,10 @@ app.delete('/utenti', (req, res) => {
 });
 
 // Avvio del server
-// Avvio del server
 app.listen(port, () => {
     console.log(`Server in esecuzione su http://localhost:${port}`);
-});;
+});
+
+
+
 

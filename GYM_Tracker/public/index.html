@@ -11,7 +11,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: linear-gradient(to right, #4caf50, #81c784); /* Sfondo gradiente */
+            background: linear-gradient(to right, #4caf50, #81c784);
             color: white;
         }
         h1.title {
@@ -20,7 +20,7 @@
             left: 50%;
             transform: translateX(-50%);
             font-size: 3em;
-            color: black; /* Colore nero per il titolo GYM Tracker */
+            color: black;
             text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
         }
         .container {
@@ -28,17 +28,17 @@
             padding: 20px;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 300px; /* Larghezza fissa per la finestra */
-            position: relative; /* Posizione relativa per il contenitore */
-            z-index: 1; /* Assicurati che il contenitore sia sopra lo sfondo */
+            width: 300px;
+            position: relative;
+            z-index: 1;
         }
         h1 {
-            color: #4caf50; /* Colore verde per i titoli di login e registrazione */
+            color: #4caf50;
             text-align: center;
             margin-bottom: 20px;
         }
         input, select {
-            width: calc(100% - 22px); /* Larghezza ridotta per allineare con i pulsanti */
+            width: calc(100% - 22px);
             padding: 10px;
             margin: 10px 0;
             border: 1px solid #ccc;
@@ -63,84 +63,95 @@
         .toggle {
             text-align: center;
             margin-top: 10px;
-            color: #333; /* Colore scuro per il testo di toggle */
+            color: #333;
         }
         .success {
-            color: green; /* Colore verde per il messaggio di successo */
+            color: green;
         }
         .error {
-            color: red; /* Colore rosso per i messaggi di errore */
-        }
-        #loginError {
-            display: none; /* Inizialmente nascosto */
-            color: red; /* Colore rosso per i messaggi di errore */
-            text-align: center;
-            margin-top: 10px;
+            color: red;
         }
     </style>
 </head>
 <body>
-    <h1 class="title">GYM Tracker</h1> <!-- Titolo colorato -->
+    <h1 class="title">GYM Tracker</h1>
+    <!-- Login -->
     <div class="container" id="loginContainer">
         <h1>Login</h1>
         <input type="email" id="loginEmail" placeholder="Email" required />
         <input type="password" id="loginPass" placeholder="Password" required />
         <button onclick="login()">Accedi</button>
         <div class="message" id="loginMessage"></div>
-        <div id="loginError">Credenziali non valide.</div> <!-- Messaggio di errore visibile -->
         <div class="toggle">Non hai un account? <a href="#" onclick="toggleForms()">Registrati qui</a></div>
     </div>
 
+    <!-- Registrazione -->
     <div class="container" id="registerContainer" style="display: none;">
         <h1>Registrazione</h1>
-        <input type="text" id="regUsername" placeholder="Username" required />
-        <input type="email" id="regEmail" placeholder="Email" required />
         <select id="regTipo" required>
             <option value="" disabled selected>Seleziona Tipo di Account</option>
             <option value="Atleta">Atleta</option>
             <option value="Personal Trainer">Personal Trainer</option>
         </select>
+        <input type="text" id="regNome" placeholder="Nome" required />
+        <input type="text" id="regCognome" placeholder="Cognome" required />
+        <input type="number" id="regEta" placeholder="Età" required min="1" />
+        <input type="number" id="regPeso" placeholder="Peso (kg)" required min="1" step="0.1" />
+        <input type="number" id="regAltezza" placeholder="Altezza (cm)" required min="1" step="0.1" />
+        <input type="email" id="regEmail" placeholder="Email" required />
         <input type="password" id="regPass" placeholder="Password" required />
         <button onclick="register()">Registrati</button>
         <div class="message" id="regMessage"></div>
         <div class="toggle">Hai già un account? <a href="#" onclick="toggleForms()">Accedi qui</a></div>
     </div>
+
     <script>
     async function login() {
         const email = document.getElementById('loginEmail').value;
         const password = document.getElementById('loginPass').value;
+
         const response = await fetch('/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
         });
+
         const data = await response.json();
-    
-        document.getElementById('loginError').style.display = 'none'; // Nasconde il messaggio di errore
-        document.getElementById('loginMessage').innerText = ''; // Resetta il messaggio di successo
-    
+        const loginMessage = document.getElementById('loginMessage');
+
+        loginMessage.className = "message";
         if (response.ok) {
-            // Reindirizza a una nuova pagina di benvenuto
-            window.location.href = `/welcome.html?username=${data.username}`;
+            loginMessage.innerText = "Accesso avvenuto con successo.";
+            loginMessage.className = "message success";
+            setTimeout(() => {
+                window.location.href = `/welcome.html?email=${data.email}`;
+            }, 2000);
         } else {
-            document.getElementById('loginError').style.display = 'block'; // Mostra il messaggio di errore
-            document.getElementById('loginMessage').innerText = data.message || "Errore durante il login.";
+            loginMessage.innerText = data.message || "Errore durante il login.";
+            loginMessage.className = "message error";
         }
     }
-    
+
     async function register() {
-        const username = document.getElementById('regUsername').value;
-        const email = document.getElementById('regEmail').value;
         const tipo = document.getElementById('regTipo').value;
+        const nome = document.getElementById('regNome').value;
+        const cognome = document.getElementById('regCognome').value;
+        const eta = parseInt(document.getElementById('regEta').value, 10);
+        const peso = parseFloat(document.getElementById('regPeso').value);
+        const altezza = parseFloat(document.getElementById('regAltezza').value);
+        const email = document.getElementById('regEmail').value;
         const password = document.getElementById('regPass').value;
+
         const response = await fetch('/utenti', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, email, password, tipo })
+            body: JSON.stringify({ tipo, nome, cognome, eta, peso, altezza, email, password })
         });
+
         const data = await response.json();
         const regMessage = document.getElementById('regMessage');
-    
+
+        regMessage.className = "message";
         if (response.ok) {
             regMessage.innerText = "Registrazione avvenuta con successo.";
             regMessage.className = "message success";
@@ -150,7 +161,7 @@
             regMessage.className = "message error";
         }
     }
-    
+
     function toggleForms() {
         const loginContainer = document.getElementById('loginContainer');
         const registerContainer = document.getElementById('registerContainer');
@@ -162,9 +173,13 @@
             registerContainer.style.display = 'block';
         }
     }
-</script>
+    </script>
 </body>
-</html> 
+</html>
+
+
+
+
 
 
 
