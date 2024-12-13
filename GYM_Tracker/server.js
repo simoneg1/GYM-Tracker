@@ -1,7 +1,17 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+
+const sqlite3 = require('sqlite3').verbose();
+
+
+
+//const mock = require('./DBMock.js');
+
+//const db = new mock();
+
+
+//const DBMock = require('./DBMock.js');
 
 const app = express();
 const port = 3001;
