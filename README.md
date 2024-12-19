@@ -36,14 +36,17 @@ Requisiti Funzionali:
 - Registrazione di un personal trainer (nome, cognome, email, password).
 - Accesso sia per l'utente che per il personal trainer tramite email e password.
 - Possibilità di registrare un allenamento inserendo titolo e data allenamento.
-- Possibilità di inserire esercizi con relative serie, ripetizioni e pesi all'interno di un allenamento.
+- Possibilità di inserire, modificare o eliminare gli esercizi all'interno di un allenamento.
+- Possibilità di inserire serie, ripetizioni e pesi all'interno di un allenamento.
 - Avere un timer modificabile per il recupero tra le serie.
+- Possibilità di cercare un allenamento.
 - Possibilità di eliminare un allenamento.
 - Possibilità dell'altleta di visualizzare un calendario con tutti gli allenamenti svolti.
 - Possibilità dell'altleta di visualizzare gli allenamenti presenti dentro il calendario.
-- Possibilita del personal trainer di visualizzare il calendario con tutti gli allenamenti dell'atleta.
-- Possibilità del personal trainer di visualizzare gli allenamenti presenti dentro il calendario.
-- Possibilità di un personal trainer di creare una scheda per l'atleta divisa per allenamenti.
+- Possibilita del trainer di visualizzare il calendario con tutti gli allenamenti dell'atleta.
+- Possibilità del trainer di visualizzare gli allenamenti presenti dentro il calendario.
+- Possibilità del trainer di creare una scheda per l'atleta divisa per allenamenti.
+- Possibilità del trainer di cercare un atleta.
 - Possibilità dell'atleta di visualizzare la propria scheda.
 
 
@@ -55,7 +58,7 @@ Requisiti non funzionali:
   
 
 Diagramma dei casi d'uso:
-![image](https://github.com/user-attachments/assets/4d4d46fb-32e8-4d88-a5fc-15ac17d6c8a4)
+[![image](https://github.com/user-attachments/assets/4d4d46fb-32e8-4d88-a5fc-15ac17d6c8a4)](https://yuml.me/simo12345/GYM_Tracker.svg?1734606210873)
 
 
 
