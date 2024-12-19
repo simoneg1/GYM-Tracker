@@ -58,7 +58,8 @@ Requisiti non funzionali:
   
 
 Diagramma dei casi d'uso:
-[![image](https://github.com/user-attachments/assets/4d4d46fb-32e8-4d88-a5fc-15ac17d6c8a4)](https://yuml.me/simo12345/GYM_Tracker.svg?1734606210873)
+![image](https://github.com/user-attachments/assets/b746c9e7-0398-4703-952a-2752b62ef950)
+
 
 
 
