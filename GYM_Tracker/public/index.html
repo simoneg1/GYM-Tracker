@@ -74,6 +74,26 @@
     </style>
 </head>
 <body>
+
+    <div class="container">
+        <h1>GYM Tracker</h1>
+        <button id="googleLogin">Accedi con Google</button>
+    </div>
+    <script>
+        document.getElementById('googleLogin').addEventListener('click', () => {
+            // Inizia il flusso OAuth 2.0
+            const clientId = '620267238665-2r08bi9nno9l97bgs0iir1mo7mov8951.apps.googleusercontent.com';
+            const redirectUri = 'http://localhost:3000/auth/callback';
+            const scope = 'openid email profile';
+            const responseType = 'code';
+            const state = 'secureRandomState'; // Genera un valore univoco per protezione CSRF
+            
+            const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=${responseType}&scope=${scope}&state=${state}`;
+
+            window.location.href = authUrl;
+        });
+    </script>
+
     <h1 class="title">GYM Tracker</h1>
     <!-- Login -->
     <div class="container" id="loginContainer">
@@ -176,7 +196,6 @@
     </script>
 </body>
 </html>
-
 
 
 

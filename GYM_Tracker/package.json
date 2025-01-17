@@ -1,6 +1,9 @@
 {
   "dependencies": {
+    "dotenv": "^16.4.7",
     "express": "^4.21.1",
+    "google-auth-library": "^9.15.0",
+    "querystring": "^0.2.1",
     "sqlite3": "^5.1.7"
   }
 }
