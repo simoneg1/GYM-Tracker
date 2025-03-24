@@ -1,0 +1,234 @@
+<div class="navbar admin-navbar">
+    <h1>GYM Tracker - Pannello Amministratore</h1>
+    <div class="user-info">
+        <span id="userDisplay">{{user.nome}} {{user.cognome}} ({{user.tipo}})</span>
+        <button id="logoutBtn" class="logout-btn">Logout</button>
+    </div>
+</div>
+
+<div class="dashboard-container">
+    <div class="sidebar admin-sidebar">
+        <nav>
+            <ul>
+                <li><a href="#" class="active" data-section="overview">Dashboard</a></li>
+                <li><a href="#" data-section="users">Gestione Utenti</a></li>
+                <li><a href="#" data-section="exercises">Gestione Esercizi</a></li>
+                <li><a href="#" data-section="announcements">Annunci Globali</a></li>
+                <li><a href="#" data-section="statistics">Statistiche</a></li>
+                <li><a href="#" data-section="system">Sistema</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <section id="overview" class="dashboard-section active">
+            <h2>Pannello di Amministrazione</h2>
+            <p>Benvenuto nel pannello di amministrazione di GYM Tracker. Da qui puoi gestire tutti gli aspetti del sistema.</p>
+            
+            <div class="admin-stats">
+                <div class="stat-card">
+                    <h3>Utenti Totali</h3>
+                    <div class="stat-number" id="totalUsers">-</div>
+                </div>
+                
+                <div class="stat-card">
+                    <h3>Atleti</h3>
+                    <div class="stat-number" id="totalAthletes">-</div>
+                </div>
+                
+                <div class="stat-card">
+                    <h3>Personal Trainer</h3>
+                    <div class="stat-number" id="totalTrainers">-</div>
+                </div>
+                
+                <div class="stat-card">
+                    <h3>Esercizi</h3>
+                    <div class="stat-number" id="totalExercises">-</div>
+                </div>
+            </div>
+            
+            <div class="quick-actions">
+                <h3>Azioni Rapide</h3>
+                <div class="quick-actions-grid">
+                    <button class="action-btn" id="quickAddExercise">Nuovo Esercizio</button>
+                    <button class="action-btn" id="quickAnnouncement">Nuovo Annuncio</button>
+                    <button class="action-btn" id="quickStats">Statistiche</button>
+                    <button class="action-btn" id="quickUserManagement">Gestione Utenti</button>
+                </div>
+            </div>
+            
+            <div class="recent-activity">
+                <h3>Attività Recente</h3>
+                <div id="recentAnnouncements" class="activity-list">
+                    <p>Caricamento...</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="users" class="dashboard-section">
+            <h2>Gestione Utenti</h2>
+            <p>Visualizza, modifica o elimina gli utenti del sistema.</p>
+            
+            <div class="admin-actions">
+                <button class="refresh-btn" id="refreshUsersBtn">Aggiorna Lista</button>
+            </div>
+            
+            <div class="admin-table-container">
+                <table class="admin-table" id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Cognome</th>
+                            <th>Email</th>
+                            <th>Tipo</th>
+                            <th>Azioni</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- I dati verranno inseriti qui da JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="exercises" class="dashboard-section">
+            <h2>Gestione Esercizi</h2>
+            <p>Aggiungi, modifica o elimina gli esercizi disponibili nel sistema.</p>
+            
+            <div class="admin-actions">
+                <button class="add-btn" id="addExerciseBtn">Aggiungi Esercizio</button>
+                <button class="refresh-btn" id="refreshExercisesBtn">Aggiorna Lista</button>
+            </div>
+            
+            <div class="admin-form hidden" id="exerciseForm">
+                <h3>Nuovo Esercizio</h3>
+                <div class="form-group">
+                    <label for="exerciseName">Nome Esercizio:</label>
+                    <input type="text" id="exerciseName" placeholder="Nome esercizio" required>
+                </div>
+                <div class="form-group">
+                    <label for="exerciseCategory">Categoria:</label>
+                    <select id="exerciseCategory" required>
+                        <option value="" disabled selected>Seleziona categoria</option>
+                        <option value="Petto">Petto</option>
+                        <option value="Schiena">Schiena</option>
+                        <option value="Gambe">Gambe</option>
+                        <option value="Braccia">Braccia</option>
+                        <option value="Spalle">Spalle</option>
+                        <option value="Addominali">Addominali</option>
+                        <option value="Cardio">Cardio</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="exerciseDifficulty">Difficoltà:</label>
+                    <select id="exerciseDifficulty">
+                        <option value="Principiante">Principiante</option>
+                        <option value="Intermedio">Intermedio</option>
+                        <option value="Avanzato">Avanzato</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="exerciseDescription">Descrizione:</label>
+                    <textarea id="exerciseDescription" rows="4" placeholder="Descrizione dell'esercizio"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn" id="cancelExerciseBtn">Annulla</button>
+                    <button type="button" class="save-btn" id="saveExerciseBtn">Salva</button>
+                </div>
+            </div>
+            
+            <div class="admin-table-container" id="exercisesTableContainer">
+                <table class="admin-table" id="exercisesTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Categoria</th>
+                            <th>Difficoltà</th>
+                            <th>Creato da</th>
+                            <th>Azioni</th>
+                        </tr>
+                    </thead>
+                    <tbody id="exercisesTableBody">
+                        <!-- I dati verranno inseriti qui da JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <section id="announcements" class="dashboard-section">
+            <h2>Annunci Globali</h2>
+            <p>Invia annunci e comunicazioni a tutti gli utenti del sistema.</p>
+            
+            <div class="admin-actions">
+                <button class="add-btn" id="addAnnouncementBtn">Nuovo Annuncio</button>
+            </div>
+            
+            <div class="admin-form hidden" id="announcementForm">
+                <h3>Nuovo Annuncio</h3>
+                <div class="form-group">
+                    <label for="announcementTitle">Titolo:</label>
+                    <input type="text" id="announcementTitle" placeholder="Titolo dell'annuncio" required>
+                </div>
+                <div class="form-group">
+                    <label for="announcementMessage">Messaggio:</label>
+                    <textarea id="announcementMessage" rows="6" placeholder="Testo del messaggio" required></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn" id="cancelAnnouncementBtn">Annulla</button>
+                    <button type="button" class="save-btn" id="saveAnnouncementBtn">Pubblica</button>
+                </div>
+            </div>
+            
+            <div class="announcements-list" id="adminAnnouncementsList">
+                <p>Caricamento annunci...</p>
+            </div>
+        </section>
+
+        <section id="statistics" class="dashboard-section">
+            <h2>Statistiche del Sistema</h2>
+            <p>Visualizza statistiche dettagliate sull'utilizzo della piattaforma.</p>
+            
+            <div class="advanced-stats">
+                <div class="stat-block">
+                    <h3>Distribuzione Utenti</h3>
+                    <div id="userDistribution" class="stat-chart"></div>
+                </div>
+                
+                <div class="stat-block">
+                    <h3>Esercizi per Categoria</h3>
+                    <div id="exerciseDistribution" class="stat-chart"></div>
+                </div>
+                
+                <div class="stat-block">
+                    <h3>Attività del Sistema</h3>
+                    <div id="systemActivity" class="stat-data">
+                        <p>Dati in caricamento...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="system" class="dashboard-section">
+            <h2>Gestione Sistema</h2>
+            <p>Amministrazione avanzata e configurazione del sistema.</p>
+            
+            <div class="system-info">
+                <h3>Informazioni sul Sistema</h3>
+                <div class="info-block" id="systemInfo">
+                    <p>Caricamento informazioni...</p>
+                </div>
+            </div>
+            
+            <div class="system-actions">
+                <h3>Azioni di Sistema</h3>
+                <div class="action-block">
+                    <button class="system-btn" id="backupBtn">Database Backup</button>
+                    <button class="system-btn" id="clearCacheBtn">Pulisci Cache</button>
+                    <button class="system-btn danger-btn" id="resetDbBtn">Reset Database</button>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

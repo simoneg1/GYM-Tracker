@@ -1,0 +1,24 @@
+<h1 class="title">GYM Tracker</h1>
+
+<div class="container" id="registerContainer">
+    <h1>Registrazione</h1>
+    <form id="registerForm">
+        <select id="regTipo" name="tipo" required>
+            <option value="" disabled selected>Seleziona Tipo di Account</option>
+            <option value="Atleta">Atleta</option>
+            <option value="Personal Trainer">Personal Trainer</option>
+        </select>
+        <input type="text" id="regNome" name="nome" placeholder="Nome" required />
+        <input type="text" id="regCognome" name="cognome" placeholder="Cognome" required />
+        <input type="number" id="regEta" name="eta" placeholder="Età" required min="1" />
+        <input type="number" id="regPeso" name="peso" placeholder="Peso (kg)" required min="1" step="0.1" />
+        <input type="number" id="regAltezza" name="altezza" placeholder="Altezza (cm)" required min="1" step="0.1" />
+        <input type="email" id="regEmail" name="email" placeholder="Email" required />
+        <input type="password" id="regPass" name="password" placeholder="Password" required />
+        <button type="submit">Registrati</button>
+    </form>
+    <div class="message" id="regMessage"></div>
+    <div class="toggle">
+        Hai già un account? <a href="/">Accedi qui</a>
+    </div>
+</div>
