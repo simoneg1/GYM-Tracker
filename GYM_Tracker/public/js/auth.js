@@ -109,13 +109,75 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Google login (se implementato)
+    // Google login implementation
     const googleLoginBtn = document.getElementById('googleLogin');
     if (googleLoginBtn) {
-        googleLoginBtn.addEventListener('click', () => {
-            alert('Funzionalità di login Google in fase di implementazione');
-            // Implementazione del login Google
-        });
+        // Carica la libreria Google Identity Services
+        const loadGoogleScript = () => {
+            const script = document.createElement('script');
+            script.src = 'https://accounts.google.com/gsi/client';
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+            
+            script.onload = initGoogleLogin;
+        };
+        
+        const initGoogleLogin = () => {
+            // Il tuo Client ID di Google
+            const CLIENT_ID = '357728416594-aau29i02m1vs41de0ulajhmueni24mc3.apps.googleusercontent.com';
+            
+            google.accounts.id.initialize({
+                client_id: CLIENT_ID,
+                callback: handleGoogleCallback,
+                auto_select: false
+            });
+            
+            // Personalizza il pulsante di login Google
+            googleLoginBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.getElementById('loginMessage').textContent = 'Accesso con Google in corso...';
+                google.accounts.id.prompt();
+            });
+        };
+        
+        // Callback che gestisce la risposta di Google
+        const handleGoogleCallback = async (response) => {
+            const loginMessage = document.getElementById('loginMessage');
+            loginMessage.className = 'message';
+            loginMessage.textContent = 'Autenticazione con Google in corso...';
+            
+            try {
+                // Invia il token ID al server per la verifica
+                const serverResponse = await fetch('/auth/google', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: response.credential })
+                });
+                
+                const data = await serverResponse.json();
+                
+                if (serverResponse.ok) {
+                    loginMessage.textContent = 'Accesso con Google avvenuto con successo!';
+                    loginMessage.className = 'message success';
+                    
+                    // Reindirizza alla dashboard
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 1000);
+                } else {
+                    loginMessage.textContent = data.message || 'Errore durante il login con Google.';
+                    loginMessage.className = 'message error';
+                }
+            } catch (error) {
+                console.error('Errore durante il login con Google:', error);
+                loginMessage.textContent = 'Errore di connessione. Riprova più tardi.';
+                loginMessage.className = 'message error';
+            }
+        };
+        
+        // Carica lo script di Google all'avvio
+        loadGoogleScript();
     }
     
     // Verifico se sono nella pagina dashboard utente

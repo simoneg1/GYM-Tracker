@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 const session = require('express-session');
 const exphbs = require('express-handlebars');
 const fs = require('fs');
+const swaggerApi = require('./swagger');
 
 const app = express();
 const port = 3000;
@@ -20,6 +21,10 @@ const hbs = exphbs.create({
         }
     }
 });
+
+app.use('/api-docs', swaggerApi.serve, swaggerApi.setup);
+
+
 
 // Configurazione motore di template
 app.engine('.hbs', hbs.engine);
@@ -714,6 +719,15 @@ app.get('/debug/admin', (req, res) => {
     });
 });
 
+
+
+
+
+
+
+
+
+
 // ======================== AVVIO SERVER ========================
 
 // Avvia il server
@@ -721,4 +735,5 @@ app.listen(port, () => {
     console.log(`Server in ascolto sulla porta ${port}`);
     console.log(`Dashboard disponibile su http://localhost:${port}`);
     console.log(`Admin dashboard disponibile per gli amministratori dopo il login`);
+    console.log('Documentazione API disponibile su http://localhost:3000/api-docs');
 });

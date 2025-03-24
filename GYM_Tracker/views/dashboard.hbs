@@ -15,6 +15,7 @@
                 <li><a href="#" data-section="workouts">Allenamenti</a></li>
                 <li><a href="#" data-section="progress">Progressi</a></li>
                 <li><a href="#" data-section="profile">Profilo</a></li>
+        
             </ul>
         </nav>
     </div>
@@ -60,7 +61,15 @@
         <section id="exercises" class="dashboard-section">
             <h2>Catalogo Esercizi</h2>
             <p>Qui troverai tutti gli esercizi disponibili per il tuo allenamento.</p>
-            <!-- Contenuto degli esercizi andrà qui -->
+            
+            <!-- Pulsanti per le richieste AJAX -->
+            <div class="exercise-buttons">
+                <button id="btnAllExercises" class="btn">Visualizza tutti gli esercizi</button>
+                <button id="btnChestExercises" class="btn">Esercizi per il petto</button>
+            </div>
+            
+            <!-- Container per visualizzare i risultati -->
+            <div id="exercise-results" class="exercise-results"></div>
         </section>
 
         <section id="workouts" class="dashboard-section">
@@ -114,5 +123,248 @@
         </section>
     </div>
 </div>
+
+<style>
+/* Stili per la sezione esercizi */
+.exercise-buttons {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.exercise-buttons .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #3498db;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.exercise-buttons .btn:hover {
+    background-color: #2980b9;
+}
+
+.loader {
+    text-align: center;
+    padding: 20px;
+    font-weight: bold;
+    color: #666;
+}
+
+.exercise-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.exercise-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    padding: 20px;
+    position: relative;
+}
+
+.exercise-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+
+.exercise-card h3 {
+    color: #333;
+    margin-top: 0;
+    border-bottom: 2px solid #f1f1f1;
+    padding-bottom: 10px;
+    font-size: 18px;
+    text-transform: capitalize;
+}
+
+.exercise-card .badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    color: white;
+}
+
+.badge.beginner { background-color: #2ecc71; }
+.badge.intermediate { background-color: #f39c12; }
+.badge.expert { background-color: #e74c3c; }
+
+.badge.muscle { background-color: #3498db; }
+.badge.type { background-color: #9b59b6; }
+.badge.equipment { background-color: #34495e; }
+
+.exercise-card .info-section {
+    margin-bottom: 15px;
+}
+
+.exercise-card .info-section h4 {
+    margin: 0 0 5px 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.exercise-card .instruction-section {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #f1f1f1;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.exercise-card .instruction-section h4 {
+    margin: 0 0 10px 0;
+    color: #555;
+}
+
+.exercise-card .instruction-section p {
+    line-height: 1.6;
+    color: #666;
+    font-size: 14px;
+}
+
+.notice {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    text-align: center;
+    color: #666;
+}
+
+.error {
+    padding: 20px;
+    background-color: #fee;
+    border-radius: 5px;
+    text-align: center;
+    color: #e74c3c;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Riferimenti ai pulsanti
+    const btnAllExercises = document.getElementById('btnAllExercises');
+    const btnChestExercises = document.getElementById('btnChestExercises');
+    const resultContainer = document.getElementById('exercise-results');
+    
+    // Configurazione API
+    const apiKey = 'MVi0MTdd5DNbPt4ZG2kA+w==LBPZw114n7FmMhsG';
+    const apiUrl = 'https://api.api-ninjas.com/v1/exercises';
+    
+    // Gestione click per tutti gli esercizi
+    btnAllExercises.addEventListener('click', function() {
+        // Mostra un loader
+        resultContainer.innerHTML = '<div class="loader">Caricamento esercizi...</div>';
+        
+        // Chiamata AJAX per tutti gli esercizi
+        fetch(apiUrl, {
+            method: 'GET',
+            headers: {
+                'X-Api-Key': apiKey,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Errore nel caricamento degli esercizi');
+            }
+            return response.json();
+        })
+        .then(data => {
+            displayExercises(data);
+        })
+        .catch(error => {
+            resultContainer.innerHTML = '<div class="error">Errore durante il caricamento degli esercizi.</div>';
+            console.error('Errore:', error);
+        });
+    });
+    
+    // Gestione click per esercizi del petto
+    btnChestExercises.addEventListener('click', function() {
+        // Mostra un loader
+        resultContainer.innerHTML = '<div class="loader">Caricamento esercizi per il petto...</div>';
+        
+        // Chiamata AJAX per esercizi del petto
+        fetch(`${apiUrl}?muscle=chest`, {
+            method: 'GET',
+            headers: {
+                'X-Api-Key': apiKey,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Errore nel caricamento degli esercizi');
+            }
+            return response.json();
+        })
+        .then(data => {
+            displayExercises(data);
+        })
+        .catch(error => {
+            resultContainer.innerHTML = '<div class="error">Errore durante il caricamento degli esercizi.</div>';
+            console.error('Errore:', error);
+        });
+    });
+    
+    // Funzione per visualizzare gli esercizi
+    function displayExercises(exercises) {
+        if (!exercises || exercises.length === 0) {
+            resultContainer.innerHTML = '<div class="notice">Nessun esercizio trovato.</div>';
+            return;
+        }
+        
+        let html = '<div class="exercise-grid">';
+        
+        exercises.forEach(exercise => {
+            // Definisci la classe del badge in base alla difficoltà
+            let difficultyClass = '';
+            switch(exercise.difficulty.toLowerCase()) {
+                case 'beginner':
+                    difficultyClass = 'beginner';
+                    break;
+                case 'intermediate':
+                    difficultyClass = 'intermediate';
+                    break;
+                case 'expert':
+                    difficultyClass = 'expert';
+                    break;
+                default:
+                    difficultyClass = 'intermediate';
+            }
+            
+            html += `
+                <div class="exercise-card">
+                    <h3>${exercise.name}</h3>
+                    
+                    <div class="badge-container">
+                        <span class="badge ${difficultyClass}">${exercise.difficulty}</span>
+                        <span class="badge muscle">${exercise.muscle}</span>
+                        <span class="badge type">${exercise.type}</span>
+                        <span class="badge equipment">${exercise.equipment}</span>
+                    </div>
+                    
+                    <div class="instruction-section">
+                        <h4>Istruzioni:</h4>
+                        <p>${exercise.instructions}</p>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        resultContainer.innerHTML = html;
+    }
+});
+</script>
 
 <script src="/js/dashboard.js"></script>
