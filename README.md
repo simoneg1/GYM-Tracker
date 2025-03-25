@@ -60,7 +60,16 @@ Requisiti non funzionali:
 Diagramma dei casi d'uso:
 ![image](https://github.com/user-attachments/assets/b746c9e7-0398-4703-952a-2752b62ef950)
 
+Come Iniziare
+Scarica la repo sul tuo computer
 
+##Configurazione di DOCKER
+
+Installa Docker (Docker Desktop) funzionante https://www.docker.com/products/docker-desktop/.
+
+Nella cartella crea un file .env per le chiavi constApi =your_apikey
+
+Dopo Aver fatto i Requisiti clicca su Setup.bat ed avvia il file Apri il browser e vai all'indirizzo: http://localhost:3000/
 
 
 
