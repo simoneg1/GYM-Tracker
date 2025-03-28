@@ -1,79 +1,146 @@
-<h1 class="title">GYM Tracker</h1>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GYM Tracker - Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #17ce26 0%, #43f3cd 100%);
+        }
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1), 0 5px 15px rgba(0,0,0,0.05);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+        }
+        .input-wrapper {
+            position: relative;
+        }
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #17ce26;
+            opacity: 0.7;
+        }
+        .input-custom {
+            padding-left: 45px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        .input-custom:focus {
+            border-color: #17ce26;
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.2);
+        }
+        .btn-primary {
+            background: linear-gradient(to right, #17ce26, #43f3cd);
+            transition: all 0.4s ease;
+        }
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(17, 203, 187, 0.3);
+        }
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .social-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="login-container w-full max-w-md p-10 space-y-6">
+        <div class="text-center">
+            <div class="flex items-center justify-center mb-6">
+                <i class="fas fa-dumbbell text-5xl text-purple-600 mr-3"></i>
+                <h1 class="text-4xl font-bold text-gray-800">GYM Tracker</h1>
+            </div>
+            <p class="text-gray-600 text-lg">Benvenuto! Accedi al tuo account</p>
+        </div>
 
-{{#if error}}
-    <div class="global-message error">{{error}}</div>
-{{/if}}
+        {{#if error}}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                {{error}}
+            </div>
+        {{/if}}
 
-<div class="container" id="loginContainer">
-    <h1>Accedi</h1>
-    <form id="loginForm">
-        <input type="email" id="loginEmail" name="email" placeholder="Email" required />
-        <input type="password" id="loginPass" name="password" placeholder="Password" required />
-        <button type="submit">Accedi</button>
-    </form>
-    <div class="message" id="loginMessage"></div>
-    
-    <div class="or-divider">
-        <hr><span>OPPURE</span><hr>
+        <form id="loginForm" class="space-y-5">
+            <div class="input-wrapper">
+                <i class="fas fa-envelope input-icon"></i>
+                <input
+                    type="email"
+                    id="loginEmail"
+                    name="email"
+                    placeholder="Inserisci la tua email"
+                    required
+                    class="input-custom w-full px-4 py-3 rounded-lg focus:outline-none"
+                />
+            </div>
+
+            <div class="input-wrapper">
+                <i class="fas fa-lock input-icon"></i>
+                <input
+                    type="password"
+                    id="loginPass"
+                    name="password"
+                    placeholder="Inserisci la password"
+                    required
+                    class="input-custom w-full px-4 py-3 rounded-lg focus:outline-none"
+                />
+                <small class="text-gray-500 mt-1 block text-right">
+                    <a href="#" class="hover:text-purple-600">Password dimenticata?</a>
+                </small>
+            </div>
+
+            <button
+                type="submit"
+                class="btn-primary w-full text-white py-3 rounded-lg font-semibold flex items-center justify-center"
+            >
+                <i class="fas fa-sign-in-alt mr-3"></i>
+                Accedi
+            </button>
+        </form>
+
+        <div class="flex items-center my-6">
+            <div class="flex-grow h-px bg-gray-300"></div>
+            <span class="mx-4 text-gray-500 font-semibold">OPPURE</span>
+            <div class="flex-grow h-px bg-gray-300"></div>
+        </div>
+
+        <div class="social-login space-y-4">
+            <a
+                href="/auth/google"
+                class="social-btn w-full py-3 rounded-lg bg-white"
+            >
+                <img
+                    src="https://developers.google.com/identity/images/g-logo.png"
+                    alt="Google logo"
+                    class="w-6"
+                />
+                Accedi con Google
+            </a>
+        </div>
+
+        <div class="text-center">
+            <p class="text-gray-600">
+                Non hai un account?
+                <a href="/register" class="text-purple-600 font-semibold hover:underline">
+                    Registrati
+                </a>
+            </p>
+        </div>
     </div>
-    
-     <!-- Pulsante per login con Google -->
-    <div class="social-login">
-        <a href="/auth/google" class="btn btn-google">
-            <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo" width="20">
-            Accedi con Google
-        </a>
-    </div>
-    
-    <div class="toggle">
-        Non hai un account? <a href="/register">Registrati qui</a>
-    </div>
-</div>
-
-
-<!-- CSS per styling del pulsante Google -->
-<style>
-    .login-divider {
-        text-align: center;
-        margin: 20px 0;
-        position: relative;
-    }
-    .login-divider:before, .login-divider:after {
-        content: "";
-        position: absolute;
-        top: 50%;
-        width: 40%;
-        height: 1px;
-        background-color: #ddd;
-    }
-    .login-divider:before {
-        left: 0;
-    }
-    .login-divider:after {
-        right: 0;
-    }
-    .login-divider span {
-        background-color: white;
-        padding: 0 10px;
-        color: #777;
-    }
-    .social-login {
-        margin-top: 15px;
-    }
-    .btn-google {
-        background-color: white;
-        color: #444;
-        border: 1px solid #ddd;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        padding: 10px;
-        width: 100%;
-        text-align: center;
-        transition: background-color 0.3s;
-    }
-    .btn-google:hover {
-        background-color: #f1f1f1;
-    }
-</style>
+</body>
+</html>
