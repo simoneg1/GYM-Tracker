@@ -17,11 +17,63 @@
         <hr><span>OPPURE</span><hr>
     </div>
     
+     <!-- Pulsante per login con Google -->
     <div class="social-login">
-        <button id="googleLogin" class="google-btn" data-client-id="{{clientId}}">Accedi con Google</button>
+        <a href="/auth/google" class="btn btn-google">
+            <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo" width="20">
+            Accedi con Google
+        </a>
     </div>
     
     <div class="toggle">
         Non hai un account? <a href="/register">Registrati qui</a>
     </div>
 </div>
+
+
+<!-- CSS per styling del pulsante Google -->
+<style>
+    .login-divider {
+        text-align: center;
+        margin: 20px 0;
+        position: relative;
+    }
+    .login-divider:before, .login-divider:after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        width: 40%;
+        height: 1px;
+        background-color: #ddd;
+    }
+    .login-divider:before {
+        left: 0;
+    }
+    .login-divider:after {
+        right: 0;
+    }
+    .login-divider span {
+        background-color: white;
+        padding: 0 10px;
+        color: #777;
+    }
+    .social-login {
+        margin-top: 15px;
+    }
+    .btn-google {
+        background-color: white;
+        color: #444;
+        border: 1px solid #ddd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 10px;
+        width: 100%;
+        text-align: center;
+        transition: background-color 0.3s;
+    }
+    .btn-google:hover {
+        background-color: #f1f1f1;
+    }
+</style>
