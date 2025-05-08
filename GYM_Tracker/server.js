@@ -10,11 +10,103 @@ const swaggerApi = require('./swagger');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const dotenv = require('dotenv');
+const http = require('http');
+const socketIO = require('socket.io');
 
 // Carica le variabili d'ambiente
 dotenv.config();
 const app = express();
 const port = 3000;
+const server = http.createServer(app);
+const io = socketIO(server);
+
+// Dichiarazione delle variabili per il contatore
+let onlineUsers = 0;
+let connectedSockets = new Set();
+
+// Condividi la sessione Express con Socket.IO
+// IMPORTANTE: inserisci questa configurazione PRIMA di app.use(session(...))
+const sessionMiddleware = session({
+    secret: process.env.SESSION_SECRET || 'chiave_segreta_di_default',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: false, // In produzione impostare a true
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000 // 24 ore
+    }
+});
+
+app.use(sessionMiddleware);
+
+// Condividi la sessione con Socket.IO
+io.use((socket, next) => {
+    sessionMiddleware(socket.request, {}, next);
+});
+
+// Configurazione di Socket.IO migliorata
+io.on('connection', (socket) => {
+    console.log(`Nuova connessione: ${socket.id}`);
+
+    // Associa il socket all'ID dell'utente se autenticato
+    const userId = socket.request.session?.userId;
+    
+    // Memorizza informazioni per questo socket
+    socket.userData = {
+        userId: userId || null,
+        connectionTime: new Date()
+    };
+    
+    // Aggiungi questo socket all'insieme delle connessioni
+    connectedSockets.add(socket.id);
+    
+    // Calcola e trasmetti il conteggio aggiornato
+    onlineUsers = connectedSockets.size;
+    console.log(`Utenti online: ${onlineUsers}`);
+    
+    // Invia l'aggiornamento a TUTTI i client connessi
+    io.emit('user-counter-update', { count: onlineUsers });
+    
+    // Quando il client richiede specificamente il conteggio
+    socket.on('request-count', () => {
+        socket.emit('user-counter-update', { count: connectedSockets.size });
+        console.log(`Conteggio richiesto da ${socket.id}: ${connectedSockets.size} utenti`);
+    });
+    
+    // Gestisci disconnessione
+    socket.on('disconnect', () => {
+        console.log(`Disconnessione: ${socket.id}`);
+        connectedSockets.delete(socket.id);
+        onlineUsers = connectedSockets.size;
+        io.emit('user-counter-update', { count: onlineUsers });
+        console.log(`Socket disconnesso: ${socket.id}, Utenti online: ${onlineUsers}`);
+    });
+    
+    // Gestisci heartbeat per mantenere la connessione attiva
+    socket.on('heartbeat', () => {
+        socket.emit('heartbeat-response');
+    });
+    
+    // Debug - visualizza tutte le connessioni attive
+    if (process.env.NODE_ENV !== 'production') {
+        socket.on('debug-connections', () => {
+            if (socket.request.session?.tipo === 'admin') {
+                const connectionDetails = Array.from(connectedSockets).map(id => {
+                    const s = io.sockets.sockets.get(id);
+                    return {
+                        id: id,
+                        userId: s?.userData?.userId || 'anonimo',
+                        connectedAt: s?.userData?.connectionTime
+                    };
+                });
+                socket.emit('debug-connections-response', connectionDetails);
+            }
+        });
+    }
+});
+
+// Log dell'avvio del server WebSocket
+console.log('Socket.IO configurato per il contatore utenti online');
 
 // Funzione per preparare il database in modo sicuro
 const prepareDatabase = async () => {

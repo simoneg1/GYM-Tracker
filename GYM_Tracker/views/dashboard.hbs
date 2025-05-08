@@ -1,6 +1,12 @@
 <div class="navbar">
     <h1>GYM Tracker</h1>
     <div class="user-info">
+        <!-- Inizio aggiunta contatore utenti online -->
+        <div class="online-counter">
+            <div class="online-indicator pulse-animation"></div>
+            <span>Online: <span id="online-users-count">0</span></span>
+        </div>
+        <!-- Fine aggiunta contatore utenti online -->
         <span>{{user.nome}} {{user.cognome}} ({{user.tipo}})</span>
         <button id="logoutBtn" class="logout-btn">Logout</button>
     </div>
@@ -247,7 +253,106 @@
     text-align: center;
     color: #e74c3c;
 }
+
+/* Stili per il contatore utenti online */
+.online-counter {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.online-counter:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+.online-indicator {
+    width: 10px;
+    height: 10px;
+    background-color: #10B981;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+#online-users-count {
+    font-weight: bold;
+    margin-left: 4px;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+}
+
+.pulse-animation {
+    animation: pulse 1.5s infinite;
+}
+
+/* Animazione per il contatore quando viene aggiornato */
+@keyframes counterPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); color: #4ade80; }
+    100% { transform: scale(1); }
+}
+
+.counter-updated {
+    animation: counterPulse 0.7s ease-in-out;
+}
 </style>
+
+<!-- Importa Socket.IO prima degli altri script -->
+<script src="/socket.io/socket.io.js"></script>
+
+<!-- Script aggiornato per il contatore -->
+<script>
+// Script isolato per il contatore utenti online
+(function() {
+    // Inizializza Socket.IO
+    const socket = io();
+    const counterElement = document.getElementById('online-users-count');
+    
+    // Richiedi esplicitamente il conteggio all'avvio
+    socket.on('connect', function() {
+        console.log("Socket connesso, richiedo conteggio utenti");
+        // Breve timeout per assicurarsi che il server abbia registrato la connessione
+        setTimeout(function() {
+            socket.emit('request-count');
+        }, 500);
+    });
+    
+    // Aggiorna il contatore quando riceve aggiornamenti
+    socket.on('user-counter-update', function(data) {
+        console.log("Ricevuto aggiornamento contatore:", data);
+        if (counterElement && data && typeof data.count !== 'undefined') {
+            // Applica un'animazione al cambio di numero
+            counterElement.classList.add('counter-updated');
+            counterElement.textContent = data.count;
+            
+            // Rimuovi la classe di animazione dopo l'effetto
+            setTimeout(function() {
+                counterElement.classList.remove('counter-updated');
+            }, 700);
+        }
+    });
+    
+    // Invia un heartbeat periodico per mantenere la connessione
+    setInterval(function() {
+        socket.emit('heartbeat');
+    }, 30000);
+    
+    // Gestisci riconnessione
+    socket.on('reconnect', function() {
+        console.log("Riconnesso, richiedo nuovo conteggio");
+        socket.emit('request-count');
+    });
+})();
+</script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
