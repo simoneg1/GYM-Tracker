@@ -13,7 +13,6 @@ const dotenv = require('dotenv');
 
 // Carica le variabili d'ambiente
 dotenv.config();
-
 const app = express();
 const port = 3000;
 
@@ -198,7 +197,13 @@ prepareDatabase()
             });
         });
 
-      // ============= INIZIO CONFIGURAZIONE GOOGLE OAUTH =============
+  // ============= INIZIO CONFIGURAZIONE GOOGLE OAUTH =============
+
+// Determina l'ambiente (Codespaces o locale)
+const isCodespace = !!process.env.CODESPACES;
+const callbackURL = isCodespace 
+    ? 'https://shiny-engine-g4574667wrw394pp-3000.app.github.dev/auth/google/callback'
+    : 'http://localhost:3000/auth/google/callback';
 
 // Verifica le variabili d'ambiente necessarie
 if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
@@ -209,13 +214,14 @@ if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
     console.error('GOOGLE_CLIENT_SECRET=il_tuo_client_secret');
 } else {
     console.log('Configurazione Google OAuth: Credenziali trovate, inizializzazione...');
+    console.log('URL di callback impostato a:', callbackURL);
     
     try {
         // Configura la strategia Google OAuth con gestione degli errori
         passport.use(new GoogleStrategy({
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: 'http://localhost:3000/auth/google/callback',
+            callbackURL: callbackURL, // URL dinamico in base all'ambiente
             passReqToCallback: true
         }, (req, accessToken, refreshToken, profile, done) => {
             console.log('Callback Google OAuth chiamata - Dati profilo ricevuti');
@@ -334,6 +340,26 @@ app.get('/auth/google', checkGoogleStrategy, (req, res, next) => {
     })(req, res, next);
 });
 
+// Endpoint di test per verificare la configurazione
+app.get('/test-auth', (req, res) => {
+    res.send(`
+        <h1>Test di autenticazione Google</h1>
+        <p>Questa pagina conferma che il server risponde correttamente.</p>
+        <p><strong>Ambiente:</strong> ${isCodespace ? 'GitHub Codespaces' : 'Locale'}</p>
+        <p><strong>URL di callback:</strong> ${callbackURL}</p>
+        <p><strong>Stato sessione:</strong> ${req.session ? 'Attiva' : 'Non disponibile'}</p>
+        <p><strong>Passport disponibile:</strong> ${passport ? 'Sì' : 'No'}</p>
+        <p><strong>Google strategia configurata:</strong> ${passport._strategies.google ? 'Sì' : 'No'}</p>
+        <p><strong>GOOGLE_CLIENT_ID:</strong> ${process.env.GOOGLE_CLIENT_ID ? 'Impostato (' + process.env.GOOGLE_CLIENT_ID.substring(0, 8) + '...)' : 'Non impostato'}</p>
+        <p><strong>GOOGLE_CLIENT_SECRET:</strong> ${process.env.GOOGLE_CLIENT_SECRET ? 'Impostato (nascosto)' : 'Non impostato'}</p>
+        <h2>Prova i link:</h2>
+        <ul>
+            <li><a href="/">Torna alla home</a></li>
+            <li><a href="/auth/google">Tenta login Google</a></li>
+        </ul>
+    `);
+});
+
 // Callback di Google dopo l'autenticazione
 app.get('/auth/google/callback', checkGoogleStrategy, (req, res, next) => {
     console.log('Callback da Google ricevuta, tentativo di autenticazione');
@@ -369,6 +395,24 @@ app.get('/auth/google/callback', checkGoogleStrategy, (req, res, next) => {
         console.error("Autenticazione Google riuscita ma nessun utente trovato");
         return res.redirect('/?auth_error=user_not_found');
     }
+});
+
+// ============= FINE CONFIGURAZIONE GOOGLE OAUTH =============
+// Aggiungi questo endpoint di test
+app.get('/test-auth', (req, res) => {
+    res.send(`
+        <h1>Test di autenticazione</h1>
+        <p>Questa pagina conferma che il server risponde correttamente.</p>
+        <p>Stato sessione: ${req.session ? 'Attiva' : 'Non disponibile'}</p>
+        <p>Passport disponibile: ${passport ? 'Sì' : 'No'}</p>
+        <p>Google strategia configurata: ${passport._strategies.google ? 'Sì' : 'No'}</p>
+        <p>GOOGLE_CLIENT_ID: ${process.env.GOOGLE_CLIENT_ID ? 'Impostato' : 'Non impostato'}</p>
+        <h2>Prova i link:</h2>
+        <ul>
+            <li><a href="/">Torna alla home</a></li>
+            <li><a href="/auth/google">Tenta login Google</a></li>
+        </ul>
+    `);
 });
 
 // ============= FINE CONFIGURAZIONE GOOGLE OAUTH =============

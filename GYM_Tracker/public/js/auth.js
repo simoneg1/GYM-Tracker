@@ -119,31 +119,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // Google login implementation - VERSIONE CORRETTA
-    const googleLoginBtn = document.querySelector('a#googleLogin') || document.getElementById('googleLogin');
-    if (googleLoginBtn) {
-        // Verifichiamo che il pulsante abbia l'href corretto
-        if (!googleLoginBtn.href || !googleLoginBtn.href.includes('/auth/google')) {
-            googleLoginBtn.href = '/auth/google';
-        }
-        
-        // Gestiamo il click con un evento per mostrare il messaggio prima del redirect
-        googleLoginBtn.addEventListener('click', function(e) {
-            // Non preveniamo il comportamento predefinito per consentire il redirect normale
-            // Mostriamo solo un messaggio se esiste l'elemento
-            const loginMessage = document.getElementById('loginMessage');
-            if (loginMessage) {
-                loginMessage.className = 'message';
-                loginMessage.textContent = 'Reindirizzamento al login con Google...';
-                loginMessage.style.display = 'block';
-            }
-            
-            // Non è necessario fare window.location.href manualmente
-            // Il browser seguirà l'href del link automaticamente
-        });
-    } else {
-        console.warn('Pulsante di login Google non trovato nella pagina');
-    }
+const googleLoginBtn = document.getElementById('googleLogin');
+if (googleLoginBtn) {
+    // Rimuovi eventuale gestione precedente
+    googleLoginBtn.href = "/auth/google"; // Assicurati che l'href sia corretto
     
+    // Non prevenire il comportamento predefinito!
+    googleLoginBtn.addEventListener('click', function() {
+        // Mostra solo un messaggio prima della navigazione
+        const loginMessage = document.getElementById('loginMessage');
+        if (loginMessage) {
+            loginMessage.className = 'message';
+            loginMessage.textContent = 'Reindirizzamento al login con Google...';
+            loginMessage.style.display = 'block';
+        }
+        // Lascia che il browser segua il link normalmente
+    });
+}
     // Verifico se sono nella pagina dashboard utente
     const updateProfileBtn = document.querySelector('.update-profile-btn');
     if (updateProfileBtn) {
