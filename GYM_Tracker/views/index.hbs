@@ -57,6 +57,26 @@
             transform: translateY(-5px);
             box-shadow: 0 6px 12px rgba(0,0,0,0.1);
         }
+        /* Stili per i messaggi */
+    .message {
+        padding: 10px;
+        border-radius: 5px;
+        text-align: center;
+        margin-bottom: 15px;
+    }
+    .message.error {
+        background-color: #fecaca;
+        border: 1px solid #f87171;
+        color: #b91c1c;
+    }
+    .message.success {
+        background-color: #d1fae5;
+        border: 1px solid #34d399;
+        color: #047857;
+    }
+    .message.hidden {
+        display: none;
+    }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
@@ -103,7 +123,8 @@
                     <a href="#" class="hover:text-purple-600">Password dimenticata?</a>
                 </small>
             </div>
-
+<!-- Aggiungi questo elemento per i messaggi -->
+    <div id="loginMessage" class="message hidden"></div> 
             <button
                 type="submit"
                 class="btn-primary w-full text-white py-3 rounded-lg font-semibold flex items-center justify-center"
@@ -142,5 +163,6 @@
             </p>
         </div>
     </div>
+    <script src="/js/auth.js"></script>
 </body>
 </html>
