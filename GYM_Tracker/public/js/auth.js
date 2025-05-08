@@ -6,8 +6,11 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             
             const loginMessage = document.getElementById('loginMessage');
-            loginMessage.className = 'message';
-            loginMessage.textContent = 'Effettuando l\'accesso...';
+            if (loginMessage) {
+                loginMessage.className = 'message';
+                loginMessage.textContent = 'Effettuando l\'accesso...';
+                loginMessage.style.display = 'block';
+            }
             
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPass').value;
@@ -22,21 +25,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
                 
                 if (response.ok) {
-                    loginMessage.textContent = 'Accesso avvenuto con successo.';
-                    loginMessage.className = 'message success';
+                    if (loginMessage) {
+                        loginMessage.textContent = 'Accesso avvenuto con successo.';
+                        loginMessage.className = 'message success';
+                    }
                     
                     // Reindirizza alla dashboard (il server deciderà quale dashboard mostrare in base al tipo)
                     setTimeout(() => {
                         window.location.href = '/dashboard';
                     }, 1000);
                 } else {
-                    loginMessage.textContent = data.message || 'Errore durante il login.';
-                    loginMessage.className = 'message error';
+                    if (loginMessage) {
+                        loginMessage.textContent = data.message || 'Errore durante il login.';
+                        loginMessage.className = 'message error';
+                    }
                 }
             } catch (error) {
                 console.error('Errore durante il login:', error);
-                loginMessage.textContent = 'Errore di connessione. Riprova più tardi.';
-                loginMessage.className = 'message error';
+                if (loginMessage) {
+                    loginMessage.textContent = 'Errore di connessione. Riprova più tardi.';
+                    loginMessage.className = 'message error';
+                }
             }
         });
     }
@@ -109,75 +118,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Google login implementation
-    const googleLoginBtn = document.getElementById('googleLogin');
+    // Google login implementation - VERSIONE CORRETTA
+    const googleLoginBtn = document.querySelector('a#googleLogin') || document.getElementById('googleLogin');
     if (googleLoginBtn) {
-        // Carica la libreria Google Identity Services
-        const loadGoogleScript = () => {
-            const script = document.createElement('script');
-            script.src = 'https://accounts.google.com/gsi/client';
-            script.async = true;
-            script.defer = true;
-            document.head.appendChild(script);
-            
-            script.onload = initGoogleLogin;
-        };
+        // Verifichiamo che il pulsante abbia l'href corretto
+        if (!googleLoginBtn.href || !googleLoginBtn.href.includes('/auth/google')) {
+            googleLoginBtn.href = '/auth/google';
+        }
         
-        const initGoogleLogin = () => {
-            // Il tuo Client ID di Google
-            const CLIENT_ID = '357728416594-aau29i02m1vs41de0ulajhmueni24mc3.apps.googleusercontent.com';
-            
-            google.accounts.id.initialize({
-                client_id: CLIENT_ID,
-                callback: handleGoogleCallback,
-                auto_select: false
-            });
-            
-            // Personalizza il pulsante di login Google
-            googleLoginBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                document.getElementById('loginMessage').textContent = 'Accesso con Google in corso...';
-                google.accounts.id.prompt();
-            });
-        };
-        
-        // Callback che gestisce la risposta di Google
-        const handleGoogleCallback = async (response) => {
+        // Gestiamo il click con un evento per mostrare il messaggio prima del redirect
+        googleLoginBtn.addEventListener('click', function(e) {
+            // Non preveniamo il comportamento predefinito per consentire il redirect normale
+            // Mostriamo solo un messaggio se esiste l'elemento
             const loginMessage = document.getElementById('loginMessage');
-            loginMessage.className = 'message';
-            loginMessage.textContent = 'Autenticazione con Google in corso...';
-            
-            try {
-                // Invia il token ID al server per la verifica
-                const serverResponse = await fetch('/auth/google', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token: response.credential })
-                });
-                
-                const data = await serverResponse.json();
-                
-                if (serverResponse.ok) {
-                    loginMessage.textContent = 'Accesso con Google avvenuto con successo!';
-                    loginMessage.className = 'message success';
-                    
-                    // Reindirizza alla dashboard
-                    setTimeout(() => {
-                        window.location.href = '/dashboard';
-                    }, 1000);
-                } else {
-                    loginMessage.textContent = data.message || 'Errore durante il login con Google.';
-                    loginMessage.className = 'message error';
-                }
-            } catch (error) {
-                console.error('Errore durante il login con Google:', error);
-                loginMessage.textContent = 'Errore di connessione. Riprova più tardi.';
-                loginMessage.className = 'message error';
+            if (loginMessage) {
+                loginMessage.className = 'message';
+                loginMessage.textContent = 'Reindirizzamento al login con Google...';
+                loginMessage.style.display = 'block';
             }
-        };
-        
-        // Carica lo script di Google all'avvio
-        loadGoogleScript();
+            
+            // Non è necessario fare window.location.href manualmente
+            // Il browser seguirà l'href del link automaticamente
+        });
+    } else {
+        console.warn('Pulsante di login Google non trovato nella pagina');
     }
     
     // Verifico se sono nella pagina dashboard utente

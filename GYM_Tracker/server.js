@@ -198,13 +198,28 @@ prepareDatabase()
             });
         });
 
-        // Configura la strategia Google OAuth
+      // ============= INIZIO CONFIGURAZIONE GOOGLE OAUTH =============
+
+// Verifica le variabili d'ambiente necessarie
+if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+    console.error('ERRORE: Variabili d\'ambiente GOOGLE_CLIENT_ID e GOOGLE_CLIENT_SECRET non configurate.');
+    console.error('Per abilitare il login con Google, crea un file .env nella cartella principale');
+    console.error('e aggiungi le seguenti variabili:');
+    console.error('GOOGLE_CLIENT_ID=il_tuo_client_id');
+    console.error('GOOGLE_CLIENT_SECRET=il_tuo_client_secret');
+} else {
+    console.log('Configurazione Google OAuth: Credenziali trovate, inizializzazione...');
+    
+    try {
+        // Configura la strategia Google OAuth con gestione degli errori
         passport.use(new GoogleStrategy({
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
             callbackURL: 'http://localhost:3000/auth/google/callback',
             passReqToCallback: true
         }, (req, accessToken, refreshToken, profile, done) => {
+            console.log('Callback Google OAuth chiamata - Dati profilo ricevuti');
+            
             // Estrai l'email dal profilo Google
             const email = profile.emails && profile.emails[0] ? profile.emails[0].value : null;
             
@@ -260,7 +275,7 @@ prepareDatabase()
                         db.run(
                             `INSERT INTO utenti (tipo, nome, cognome, email, password, googleId, eta, peso, altezza) 
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                            ['Utente', nome, cognome, email, hashedPassword, profile.id, 30, 70, 175], // Valori predefiniti
+                            ['atleta', nome, cognome, email, hashedPassword, profile.id, 30, 70, 175], // Valori predefiniti
                             function(err) {
                                 if (err) {
                                     console.error('Errore inserimento nuovo utente:', err);
@@ -292,50 +307,71 @@ prepareDatabase()
                 }
             });
         }));
+        
+        console.log('Strategia Google OAuth configurata correttamente');
+    } catch (err) {
+        console.error('ERRORE durante la configurazione della strategia Google OAuth:', err);
+    }
+}
 
-        // ======================== ROTTE PER L'AUTENTICAZIONE GOOGLE ========================
+// ======================== ROTTE PER L'AUTENTICAZIONE GOOGLE ========================
 
-        // Inizia l'autenticazione Google
-        app.get('/auth/google', passport.authenticate('google', {
-            scope: ['profile', 'email']
-        }));
+// Controllo middleware per verificare se la strategia Google esiste
+function checkGoogleStrategy(req, res, next) {
+    if (!passport._strategies.google) {
+        console.error('Tentativo di accesso all\'autenticazione Google ma la strategia non è configurata');
+        req.session.error_message = 'L\'autenticazione con Google non è attualmente disponibile. Contatta l\'amministratore.';
+        return res.redirect('/?auth_error=google_unavailable');
+    }
+    next();
+}
 
-        // Callback di Google dopo l'autenticazione
-        app.get('/auth/google/callback', 
-            passport.authenticate('google', { 
-                failureRedirect: '/'
-            }),
-            (req, res) => {
-                // L'utente è stato autenticato con successo
-                if (req.user) {
-                    // Salva i dati utente nella sessione
-                    req.session.userId = req.user.id;
-                    req.session.email = req.user.email;
-                    req.session.tipo = req.user.tipo;
-                    req.session.user = req.user;
-                    
-                    console.log('Login Google completato, sessione impostata:', {
-                        id: req.user.id,
-                        email: req.user.email,
-                        tipo: req.user.tipo
-                    });
-                    
-                    // Importante: assicurati che la sessione venga salvata prima del reindirizzamento
-                    req.session.save((err) => {
-                        if (err) {
-                            console.error("Errore nel salvataggio della sessione:", err);
-                            return res.redirect('/');
-                        }
-                        
-                        console.log('Sessione salvata, reindirizzamento alla dashboard');
-                        return res.redirect('/dashboard');
-                    });
-                } else {
-                    console.error("Autenticazione Google riuscita ma nessun utente trovato");
-                    return res.redirect('/');
-                }
+// Inizia l'autenticazione Google
+app.get('/auth/google', checkGoogleStrategy, (req, res, next) => {
+    console.log('Richiesta autenticazione Google ricevuta, reindirizzamento a Google');
+    passport.authenticate('google', {
+        scope: ['profile', 'email']
+    })(req, res, next);
+});
+
+// Callback di Google dopo l'autenticazione
+app.get('/auth/google/callback', checkGoogleStrategy, (req, res, next) => {
+    console.log('Callback da Google ricevuta, tentativo di autenticazione');
+    passport.authenticate('google', { 
+        failureRedirect: '/?auth_error=google_failed'
+    })(req, res, next);
+}, (req, res) => {
+    // L'utente è stato autenticato con successo
+    if (req.user) {
+        // Salva i dati utente nella sessione
+        req.session.userId = req.user.id;
+        req.session.email = req.user.email;
+        req.session.tipo = req.user.tipo;
+        req.session.user = req.user;
+        
+        console.log('Login Google completato, sessione impostata:', {
+            id: req.user.id,
+            email: req.user.email,
+            tipo: req.user.tipo
+        });
+        
+        // Importante: assicurati che la sessione venga salvata prima del reindirizzamento
+        req.session.save((err) => {
+            if (err) {
+                console.error("Errore nel salvataggio della sessione:", err);
+                return res.redirect('/?auth_error=session_save_failed');
             }
-        );
+            
+            console.log('Sessione salvata, reindirizzamento alla dashboard');
+            return res.redirect('/dashboard');
+        });
+    } else {
+        console.error("Autenticazione Google riuscita ma nessun utente trovato");
+        return res.redirect('/?auth_error=user_not_found');
+    }
+});
+
+// ============= FINE CONFIGURAZIONE GOOGLE OAUTH =============
 
         // ======================== ROTTE DI BASE ========================
 
